@@ -1,17 +1,19 @@
+BUFFER_SIZE = 1024  # same as in C
 
-def copy_content(src_content):
-    # Simulate copying text (like copying from a file)
-    dst_content = src_content
-    return dst_content
+try:
+    # Open source file in binary read mode
+    with open("source.txt", "rb") as source:
+        # Open/create destination file in binary write mode
+        with open("destination.txt", "wb") as destination:
+            while True:
+                buffer = source.read(BUFFER_SIZE)
+                if not buffer:  # End of file
+                    break
+                destination.write(buffer)
 
-# Main program
-if __name__ == "__main__":
-    # Pretend this is the content of a source file
-    source_data = "Hello, this is sample content!"
+    print("File copied successfully!")
 
-    # Copy operation (simulated)
-    destination_data = copy_content(source_data)
-
-    # Show results
-    print("Source content:", source_data)
-    print("Copied to destination:", destination_data)
+except FileNotFoundError:
+    print("Error: Source file not found.")
+except IOError as e:
+    print(f"File operation error: {e}")
