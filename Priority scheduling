@@ -1,33 +1,59 @@
-# Priority Scheduling (Non-preemptive)
+def priority_scheduling(processes):
+    n = len(processes)
 
-n = int(input("Enter number of processes: "))
+    # Sort by arrival, then priority
+    processes.sort(key=lambda x: (x[1], x[3]))
 
-processes = []
-for i in range(n):
-    bt = int(input(f"Enter Burst Time for P{i+1}: "))
-    pr = int(input(f"Enter Priority for P{i+1} (smaller = higher priority): "))
-    processes.append((i+1, bt, pr))  # (process ID, burst time, priority)
+    completed = [False] * n
+    completion_time = [0] * n
+    turnaround_time = [0] * n
+    waiting_time = [0] * n
 
-# Sort by priority (ascending → higher priority first)
-processes.sort(key=lambda x: x[2])
+    time = 0
+    completed_count = 0
 
-wait = [0] * n
-tat = [0] * n
+    while completed_count < n:
+        # Select process with highest priority among arrived
+        idx = -1
+        best_priority = float("inf")
+        for i in range(n):
+            pid, at, bt, pr = processes[i]
+            if at <= time and not completed[i]:
+                if pr < best_priority:  # smaller number = higher priority
+                    best_priority = pr
+                    idx = i
 
-# Waiting time
-for i in range(1, n):
-    wait[i] = wait[i-1] + processes[i-1][1]
+        if idx == -1:  # No process ready, jump time
+            time += 1
+            continue
 
-# Turnaround time
-for i in range(n):
-    tat[i] = wait[i] + processes[i][1]
+        # Execute process
+        pid, at, bt, pr = processes[idx]
+        time += bt
+        completion_time[idx] = time
+        turnaround_time[idx] = completion_time[idx] - at
+        waiting_time[idx] = turnaround_time[idx] - bt
+        completed[idx] = True
+        completed_count += 1
 
-# Print table
-print("\nProcess\tBurst\tPriority\tWait\tTurnaround")
-for i in range(n):
-    pid, bt, pr = processes[i]
-    print(f"P{pid}\t{bt}\t{pr}\t\t{wait[i]}\t{tat[i]}")
+    # Print results
+    print("PID\tAT\tBT\tPR\tCT\tTAT\tWT")
+    for i in range(n):
+        print(f"{processes[i][0]}\t{processes[i][1]}\t{processes[i][2]}\t{processes[i][3]}\t"
+              f"{completion_time[i]}\t{turnaround_time[i]}\t{waiting_time[i]}")
 
-# Averages
-print(f"\nAverage Waiting Time = {sum(wait)/n:.2f}")
-print(f"Average Turnaround Time = {sum(tat)/n:.2f}")
+    avg_tat = sum(turnaround_time) / n
+    avg_wt = sum(waiting_time) / n
+    print(f"\nAverage Turnaround Time: {avg_tat:.2f}")
+    print(f"Average Waiting Time: {avg_wt:.2f}")
+
+
+# Example processes (PID, Arrival Time, Burst Time, Priority)
+process_list = [
+    (1, 0, 5, 2),
+    (2, 1, 3, 1),
+    (3, 2, 8, 4),
+    (4, 3, 6, 3)
+]
+
+priority_scheduling(process_list)
