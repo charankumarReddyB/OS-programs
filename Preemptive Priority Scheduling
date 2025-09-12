@@ -1,0 +1,49 @@
+# Simple Preemptive Priority Scheduling
+
+n = int(input("Enter number of processes: "))
+
+processes = []
+for i in range(n):
+    at = int(input(f"Enter Arrival Time for P{i+1}: "))
+    bt = int(input(f"Enter Burst Time for P{i+1}: "))
+    pr = int(input(f"Enter Priority for P{i+1} (smaller = higher priority): "))
+    processes.append([i+1, at, bt, pr])  # [ID, AT, BT, Priority]
+
+# Initialize
+remaining_bt = [p[2] for p in processes]
+waiting = [0] * n
+turnaround = [0] * n
+finish_time = [0] * n
+time = 0
+complete = 0
+
+while complete < n:
+    # pick highest priority process that has arrived
+    idx = -1
+    best_pr = float("inf")
+
+    for i in range(n):
+        if processes[i][1] <= time and remaining_bt[i] > 0:
+            if processes[i][3] < best_pr:
+                best_pr = processes[i][3]
+                idx = i
+
+    if idx != -1:
+        remaining_bt[idx] -= 1
+        time += 1
+        if remaining_bt[idx] == 0:
+            complete += 1
+            finish_time[idx] = time
+            turnaround[idx] = finish_time[idx] - processes[idx][1]
+            waiting[idx] = turnaround[idx] - processes[idx][2]
+    else:
+        time += 1  # idle time
+
+# Output
+print("\nProcess\tAT\tBT\tPR\tWT\tTAT")
+for i in range(n):
+    print(f"P{processes[i][0]}\t{processes[i][1]}\t{processes[i][2]}"
+          f"\t{processes[i][3]}\t{waiting[i]}\t{turnaround[i]}")
+
+print(f"\nAverage Waiting Time = {sum(waiting)/n:.2f}")
+print(f"Average Turnaround Time = {sum(turnaround)/n:.2f}")
