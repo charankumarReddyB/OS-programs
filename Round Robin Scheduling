@@ -1,0 +1,37 @@
+# Round Robin Scheduling in Python
+
+n = int(input("Enter number of processes: "))
+burst = []
+for i in range(n):
+    bt = int(input(f"Enter Burst Time for P{i+1}: "))
+    burst.append(bt)
+
+tq = int(input("Enter Time Quantum: "))
+
+# Initialize
+remaining = burst[:]
+waiting = [0] * n
+turnaround = [0] * n
+time = 0
+completed = 0
+
+while completed < n:
+    for i in range(n):
+        if remaining[i] > 0:
+            if remaining[i] > tq:
+                time += tq
+                remaining[i] -= tq
+            else:
+                time += remaining[i]
+                turnaround[i] = time
+                waiting[i] = turnaround[i] - burst[i]
+                remaining[i] = 0
+                completed += 1
+
+# Output
+print("\nProcess\tBT\tWT\tTAT")
+for i in range(n):
+    print(f"P{i+1}\t{burst[i]}\t{waiting[i]}\t{turnaround[i]}")
+
+print(f"\nAverage Waiting Time = {sum(waiting)/n:.2f}")
+print(f"Average Turnaround Time = {sum(turnaround)/n:.2f}")
