@@ -1,0 +1,40 @@
+# py_shm_example.py
+# Run with: python py_shm_example.py
+
+from multiprocessing import Process
+from multiprocessing import shared_memory
+import sys
+
+MSG = b"Hello from parent via Python shared_memory!"
+
+def child_proc(shm_name, size):
+    # attach to existing shared memory by name
+    existing_shm = shared_memory.SharedMemory(name=shm_name)
+    try:
+        # read until null byte or the full size
+        buf = existing_shm.buf[:size]
+        # decode stopping at first null byte if present
+        raw = bytes(buf).split(b'\x00', 1)[0]
+        print("Child reading from shared memory: {!r}".format(raw.decode()))
+    finally:
+        existing_shm.close()
+
+if __name__ == "__main__":
+    size = 1024
+    # create shared memory block
+    shm = shared_memory.SharedMemory(create=True, size=size)
+    try:
+        # write message
+        shm.buf[:len(MSG)] = MSG
+        # zero out the rest (optional)
+        shm.buf[len(MSG):] = b'\x00' * (size - len(MSG))
+
+        # start child which will attach by name
+        p = Process(target=child_proc, args=(shm.name, size))
+        p.start()
+        p.join()
+
+        print(f"Parent: cleaned up shared memory name={shm.name}")
+    finally:
+        shm.close()
+        shm.unlink()  # remove the shared memory block
