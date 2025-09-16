@@ -1,0 +1,17 @@
+from multiprocessing import Process, Queue
+
+def child(q):
+    msg = q.get()   # Receive message from queue
+    print("Child received:", msg)
+
+if __name__ == "__main__":
+    q = Queue()
+
+    # Create child process
+    p = Process(target=child, args=(q,))
+    p.start()
+
+    # Parent sends message
+    q.put("Hello from Parent via Message Queue!")
+
+    p.join()
