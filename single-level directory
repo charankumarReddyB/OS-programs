@@ -1,0 +1,43 @@
+"""
+single_level_dir.py
+Simulates a single-level directory: create, delete, list, search files.
+"""
+import sys
+
+class SingleLevelDir:
+    def __init__(self):
+        self.directory = {}  # filename -> content
+
+    def create(self, name, content=""):
+        if name in self.directory:
+            print(f"Error: '{name}' already exists")
+        else:
+            self.directory[name] = content
+            print(f"Created '{name}'")
+
+    def delete(self, name):
+        if name in self.directory:
+            del self.directory[name]
+            print(f"Deleted '{name}'")
+        else:
+            print(f"Error: '{name}' not found")
+
+    def list_files(self):
+        if not self.directory:
+            print("Directory empty")
+        else:
+            for fn in self.directory:
+                print(fn)
+
+    def search(self, name):
+        print("Found" if name in self.directory else "Not found")
+
+
+if __name__ == "__main__":
+    d = SingleLevelDir()
+    d.create("file1.txt", "hello")
+    d.create("file2.txt", "data")
+    d.list_files()
+    d.search("file2.txt")
+    d.delete("file1.txt")
+    d.list_files()
