@@ -1,0 +1,33 @@
+"""
+two_level_dir.py
+Simulates two-level directories: user -> files
+"""
+class TwoLevelDir:
+    def __init__(self):
+        self.root = {}  # user -> {filename:content}
+
+    def create_user(self, user):
+        if user not in self.root:
+            self.root[user] = {}
+            print(f"User '{user}' created")
+
+    def create_file(self, user, fname, content=""):
+        self.create_user(user)
+        if fname in self.root[user]:
+            print("File exists")
+        else:
+            self.root[user][fname] = content
+            print(f"Created {fname} for {user}")
+
+    def list_user(self, user):
+        if user in self.root:
+            for f in self.root[user]:
+                print(f)
+        else:
+            print("No such user")
+
+if __name__ == "__main__":
+    t = TwoLevelDir()
+    t.create_file("alice", "a.txt", "alpha")
+    t.create_file("bob", "b.txt", "beta")
+    t.list_user("alice")
