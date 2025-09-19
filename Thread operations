@@ -1,0 +1,20 @@
+"""
+thread_ops.py
+Demonstrates create, join, compare (equal by identity), and thread exit.
+"""
+import threading, time
+
+def worker():
+    print("Worker started")
+    time.sleep(0.2)
+    print("Worker exiting")
+    # thread returns / exits automatically
+
+if __name__ == "__main__":
+    t1 = threading.Thread(target=worker, name="T1")
+    t2 = threading.Thread(target=worker, name="T2")
+    t1.start(); t2.start()
+    print("t1 == t2 ?", t1 == t2)  # equality of Thread objects
+    t1.join()
+    t2.join()
+    print("Both threads joined")
