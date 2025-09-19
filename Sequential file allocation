@@ -1,0 +1,33 @@
+"""
+seq_alloc.py
+Simulates sequential file allocation on blocks (simple).
+"""
+TOTAL_BLOCKS = 20
+disk = [None] * TOTAL_BLOCKS  # None free, else filename
+
+def allocate(filename, size):
+    # find contiguous run of 'size' free blocks
+    run = 0
+    for i in range(TOTAL_BLOCKS):
+        if disk[i] is None:
+            run += 1
+        else:
+            run = 0
+        if run == size:
+            start = i - size + 1
+            for j in range(start, start+size):
+                disk[j] = filename
+            return start
+    return -1
+
+def deallocate(filename):
+    for i in range(TOTAL_BLOCKS):
+        if disk[i] == filename:
+            disk[i] = None
+
+if __name__ == "__main__":
+    print("Alloc index:", allocate("fileA", 5))
+    print("Alloc index:", allocate("fileB", 7))
+    print(disk)
+    deallocate("fileA")
+    print(disk)
